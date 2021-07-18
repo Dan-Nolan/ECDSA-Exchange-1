@@ -29,10 +29,11 @@ document.getElementById("transfer-amount").addEventListener('click', () => {
   const key = ec.keyFromPrivate(senderPrivatekey);
   const message = {amount: amount}
   const msgHash = SHA256(message);
-  const signature = key.sign(msgHash.toString());
+  const signature = key.sign(msgHash.words);
+  const recid = ec.getKeyRecoveryParam(msgHash.words, signature, key.getPublic());
 
   const body = JSON.stringify({
-    sender: sender.trim(), recipient: recipient.trim(), message, signature: {
+    sender: sender.trim(), recipient: recipient.trim(), amount, recid, message, signature: {
       r: signature.r.toString(16),
       s: signature.s.toString(16)
     }
